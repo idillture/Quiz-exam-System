@@ -52,4 +52,8 @@ package quiz;
 	        }
 	        return this.password.equals(inputPassword);
 	    }
-}
+	    @Override
+	    public String toString() {
+	        return "User [id:" + id + ", username:" + username + ", fullName:" + fullName + "]";
+	    }
+	}  
