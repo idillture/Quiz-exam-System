@@ -33,4 +33,23 @@ package quiz;
 	    public String getFullName() {
 	        return fullName;
 	    }
+	    
+	    // Setter
+
+	    public void setFullName(String fullName) {
+	        this.fullName = fullName;
+	    }
+
+	    public void setPassword(String password) {
+	        this.password = password;
+	    }
+
+	     // Checks if the given password matches this user's password.
+
+	    public boolean checkPassword(String inputPassword) {
+	        if (inputPassword == null) {
+	            return false;
+	        }
+	        return this.password.equals(inputPassword);
+	    }
 }
