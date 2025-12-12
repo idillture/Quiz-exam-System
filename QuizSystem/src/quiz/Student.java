@@ -1,6 +1,5 @@
 package quiz;
 
-// A student who takes quizzes in the system.
 public class Student extends User {
 	
 	private double lastScore;
@@ -15,6 +14,7 @@ public class Student extends User {
         this.lastWrongCount = 0;  
 	}
 	
+	// Getters
 	 public double getLastScore() {
 	        return lastScore;
 	    }
@@ -23,10 +23,22 @@ public class Student extends User {
 	        return lastCorrectCount;
 	    }
 
-	    public int getLastWrongCount() {
+	 public int getLastWrongCount() {
 	        return lastWrongCount;
 	    }
 	   
+	    // Setters
+	 public void setLastScore(double lastScore) {
+	        this.lastScore = lastScore;
+	    }
+	    
+	 public void setLastCorrectCount(int lastCorrectCount) {
+	        this.lastCorrectCount = lastCorrectCount;
+	    }
+	    
+	 public void setLastWrongCount(int lastWrongCount) {
+	        this.lastWrongCount = lastWrongCount;
+	    }
 	    
 }
 
