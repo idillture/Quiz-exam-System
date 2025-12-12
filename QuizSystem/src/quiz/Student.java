@@ -40,5 +40,15 @@ public class Student extends User {
 	        this.lastWrongCount = lastWrongCount;
 	    }
 	    
+	    @Override
+	 public String toString() {
+	        return "Student:\n" +
+	               "  ID : " + getId() + "\n" +
+	               "  Username : " + getUsername() + "\n" +
+	               "  Full Name : " + getFullName() + "\n" +
+	               "  Last Score : " + lastScore + "\n" +
+	               "  Correct Answers : " + lastCorrectCount + "\n" +
+	               "  Wrong Answers : " + lastWrongCount;
+	    }
 }
 
