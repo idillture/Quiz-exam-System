@@ -1,12 +1,8 @@
 package quiz;
 
 public class TrueFalseQuestion extends Question {
-
-/**
- * This class refers to a question that can be answered with True or False.
- *
- * The correct answer is stored as a boolean value.
- */
+	
+	// The correct answer is stored as a boolean value.
 	
 	    private boolean correctAnswer;
 
@@ -22,8 +18,10 @@ public class TrueFalseQuestion extends Question {
 	    }
 
 	    /**
-	     * Reads the user's answer as true/false (also accepts t/f, yes/no, y/n)
-	     * and then, compares it with the correct answer.
+	     * Checks whether the user's answer matches the correct answer.
+	     * Supported input formats:
+	     * true / false or t / f
+	     * yes / no or y / n
 	     */
 	    
 	    @Override
@@ -47,7 +45,9 @@ public class TrueFalseQuestion extends Question {
 	            userValue = false;
 
 	        } else {
-	            
+	        	
+	            // invalid input
+	        	
 	            return false;
 	        }
 
