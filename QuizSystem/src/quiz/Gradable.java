@@ -1,12 +1,10 @@
 package quiz;
 
+//We use interface for anything that can be graded.
+
 public interface Gradable {
 
-	/**
-	 * We use interface for anything that can be graded.
-	 *
-	 * Calculates and returns the score.
-	 */
+	//Calculates and returns the score.
 	
 	double calculateScore();
 	
