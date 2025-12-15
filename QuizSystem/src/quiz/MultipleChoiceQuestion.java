@@ -2,13 +2,6 @@
 
 	import java.util.List;
 
-	/**
-	 * 
-	 * This class represents a standard multiple choice question.
-	 * Each question has a text and a list of options the student can choose from.
-	 * Only one of the options is correct, stored by its index.
-	 */
-
 	public class MultipleChoiceQuestion extends Question{
 		
 		 private List<String> options;
@@ -23,6 +16,8 @@
 		        this.correctOptionIndex = correctOptionIndex;
 		 }
 		 
+		 // Getters
+		 
 		 public List<String> getOptions() {
 		        return options;
 		    }
@@ -31,39 +26,47 @@
 		        return correctOptionIndex;
 		    }
 
-		 /**
+		     /**
 		     * Checks if the user's answer matches the correct option.
 		     * Supported input formats:
-		     * Letter choice (not case insensitive),
+		     * Letter choice (case insensitive),
 		     * Typing the full text of the correct option.
 		     */
 		 
-		 @Override
-		 public boolean checkAnswer(String userAnswer) {
-		     if (userAnswer == null || options == null ||
-		         correctOptionIndex < 0 || correctOptionIndex >= options.size()) {
+	         @Override
+	         public boolean checkAnswer(String userAnswer) {
+	             if (userAnswer == null || options == null ||
+	                 correctOptionIndex < 0 || correctOptionIndex >= options.size()) {
 
-		         return false;
-		     }
+	                 return false;
+	             }
 
-		     String trimmed = userAnswer.trim().toLowerCase();
+	             String trimmed = userAnswer.trim();
+	             if (trimmed.isEmpty()) {
+	                 return false;
+	             }
 
-		     // First try: assume the student answered with a letter (a, b, c, ...)
-		     if (!trimmed.isEmpty()) {
-		         char ch = trimmed.charAt(0);  // first character
-		         
-		         // Convert letters to indexes: a = 0, b = 1, c = 2 ...
-		         if (ch >= 'a' && ch <= 'z') {
-		             int chosenIndex = ch - 'a';
-		             return chosenIndex == correctOptionIndex;
-		         }
-		     }
+	             String lower = trimmed.toLowerCase();
 
-		     // Second try: check if what they typed matches the correct option text exactly.
-		     String correctText = options.get(correctOptionIndex);
-		     return correctText.trim().equalsIgnoreCase(trimmed);
-		 }
-		        
-	}
+	             // Assume the student answered with a letter (a, b, c, ...)
+	             char ch = lower.charAt(0);  // first character
+
+	             // Convert letters to indexes: a = 0, b = 1, c = 2 ...
+	             if (ch >= 'a' && ch <= 'z') {
+	                 int chosenIndex = ch - 'a';
+	                 if (chosenIndex == correctOptionIndex) {
+	                     return true;
+	                 }
+	             }
+
+	             // Check if what they typed matches the correct option text
+	             String correctText = options.get(correctOptionIndex);
+	             return correctText.trim().equalsIgnoreCase(trimmed);
+	         }
+	     }
+
+
+		     
+
 
 
