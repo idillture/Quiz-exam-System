@@ -8,12 +8,10 @@
 		
 		 private int correctOptionIndex;
 		 
-		 public MultipleChoiceQuestion(int id, String text, List<String> options, int correctOptionIndex, double points) {
-			 
-			 super(id, text, points);
-
-		        this.options = options;
-		        this.correctOptionIndex = correctOptionIndex;
+		 public MultipleChoiceQuestion(int id, String text, int difficulty, List<String> options, int correctOptionIndex, double points) {
+			    super(id, text, difficulty, points);
+			    this.options = options;
+			    this.correctOptionIndex = correctOptionIndex;
 		 }
 		 
 		 // Getters
