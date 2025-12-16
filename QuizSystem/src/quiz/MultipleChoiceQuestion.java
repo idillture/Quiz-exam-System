@@ -1,6 +1,7 @@
 	package quiz;
 
 	import java.util.List;
+	import java.util.Collections; 
 
 	public class MultipleChoiceQuestion extends Question{
 		
@@ -24,12 +25,32 @@
 		        return correctOptionIndex;
 		    }
 
-		     /**
-		     * Checks if the user's answer matches the correct option.
-		     * Supported input formats:
-		     * Letter choice (case insensitive),
-		     * Typing the full text of the correct option.
-		     */
+		 public void shuffleOptions() {
+		        if (options == null || options.isEmpty()) {
+		            return;
+		        }
+
+		        // Save the correct option text before shuffling
+		        String correctText = options.get(correctOptionIndex);
+
+		        // Shuffle the list
+		        Collections.shuffle(options);
+
+		        for (int i = 0; i < options.size(); i++) {
+		            if (options.get(i).equals(correctText)) {
+		                correctOptionIndex = i;
+		                break;
+		            }
+		        }
+		    }
+		 
+
+	     /**
+	     * Checks if the user's answer matches the correct option.
+	     * Supported input formats:
+	     * Letter choice (case insensitive),
+	     * Typing the full text of the correct option.
+	     */
 		 
 	         @Override
 	         public boolean checkAnswer(String userAnswer) {
