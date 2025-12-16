@@ -10,12 +10,15 @@ public abstract class Question {
 	// Text shown to the student.
 	private String text;
 	
+	private int difficulty; 
+	
 	private double points;
 	
 	// Creates a new question with the given information.
-    public Question(int id, String text, double points) {
+    public Question(int id, String text, int difficulty, double points) {
     	this.id = id;
     	this.text = text;
+    	this.difficulty = difficulty;
     	this.points = points;
     }
     
@@ -26,6 +29,9 @@ public abstract class Question {
     public String getText() {
         return text;
     }
+    public int getDifficulty() { 
+    	return difficulty; 
+    	}
     public double getPoints() {
     	return points;
     }
