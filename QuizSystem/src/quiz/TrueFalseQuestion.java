@@ -6,9 +6,9 @@ public class TrueFalseQuestion extends Question {
 	
 	    private boolean correctAnswer;
 
-	    public TrueFalseQuestion(int id, String text, double points, boolean correctAnswer) {
+	    public TrueFalseQuestion(int id, String text, int difficulty, double points, boolean correctAnswer) {
 
-	        super(id, text, points);
+	        super(id, text, difficulty, points);
 
 	        this.correctAnswer = correctAnswer;
 	    }
