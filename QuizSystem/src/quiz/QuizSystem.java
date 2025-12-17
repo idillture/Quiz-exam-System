@@ -47,6 +47,42 @@ public class QuizSystem {
 	            }
 		 }
 		  scanner.close();
+	 }
+		  
+		  private static void initializeData() {
+		        teacher = new Teacher(99, "teacher", "12345", "Teacher");
+
+		        students = new ArrayList<>();
+		        students.add(new Student(100, "idilture", "230303020", "İdil Türe"));
+		        students.add(new Student(101, "eylultuncel", "230303021", "Eylül Tuncel"));
+		        students.add(new Student(102, "sudenazibis", "230303022", "Sudenaz İbiş"));
+
+		        questionBank = new QuestionBank();
+		        createDemoQuestions();
+		    }
+		  
+		  private static void createDemoQuestions() {
+			  
+		  }
+		  
+		  private static User login(String username, String password) {
+			  
+		        if (teacher.getUsername().equals(username) &&
+		            teacher.checkPassword(password)) {
+		            return teacher;
+		        }
+
+		        for (Student s : students) {
+		            if (s.getUsername().equals(username) &&
+		                s.checkPassword(password)) {
+		                return s;
+		            }
+		        }
+
+		        return null;
+		    }
+
+
 
 	
 	 
