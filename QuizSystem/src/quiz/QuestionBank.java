@@ -66,12 +66,17 @@
 	        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 
 	            String line;
+	            boolean isFirstLine = true; 
+
 	            while ((line = br.readLine()) != null) {
+
 	                line = line.trim();
 	                if (line.isEmpty()) {
-	                    continue;
+	                    continue; 
 	                }
-	                if (line.toLowerCase().startsWith("id;")) {
+
+	                if (isFirstLine) {
+	                    isFirstLine = false;
 	                    continue;
 	                }
 
@@ -90,6 +95,7 @@
 	                String answerPart = parts[6].trim();
 
 	                if (type.equalsIgnoreCase("MC")) {
+	                    // options: "6|7|8|9"
 	                    List<String> options = new ArrayList<>();
 	                    if (!optionsPart.isEmpty()) {
 	                        options = Arrays.asList(optionsPart.split("\\|"));
@@ -97,14 +103,15 @@
 	                    int correctIndex = Integer.parseInt(answerPart);
 
 	                    MultipleChoiceQuestion mcq =
-	                        new MultipleChoiceQuestion(id, text, difficulty, options, correctIndex, points);
+	                            new MultipleChoiceQuestion(id, text, difficulty, options, correctIndex, points);
 	                    addQuestion(mcq);
 
 	                } else if (type.equalsIgnoreCase("TF")) {
+	                    // TRUE / FALSE
 	                    boolean correctAnswer = Boolean.parseBoolean(answerPart.toLowerCase());
 
 	                    TrueFalseQuestion tfq =
-	                        new TrueFalseQuestion(id, text, difficulty, points, correctAnswer);
+	                            new TrueFalseQuestion(id, text, difficulty, points, correctAnswer);
 	                    addQuestion(tfq);
 
 	                } else {
@@ -119,5 +126,5 @@
 	        }
 	    }
 	}
-	
-
+	    
+	   
