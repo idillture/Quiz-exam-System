@@ -58,12 +58,12 @@ public class QuizSystem {
 		        students.add(new Student(102, "sudenazibis", "230303022", "Sudenaz İbiş"));
 
 		        questionBank = new QuestionBank();
-		        createDemoQuestions();
+
+		        questionBank.loadFromCsv("questions.csv");
+
+		        System.out.println("Loaded " + questionBank.getAllQuestions().size()
+		                + " questions from CSV.\n");
 		    }
-		  
-		  private static void createDemoQuestions() {
-			  
-		  }
 		  
 		  private static User login(String username, String password) {
 			  
@@ -81,6 +81,42 @@ public class QuizSystem {
 
 		        return null;
 		    }
+		  
+		  private static void showStudentMenu(Student student) {
+		        while (true) {
+		            System.out.println(" STUDENT MENU ");
+		            System.out.println("1) Start new quiz");
+		            System.out.println("2) View last exam result");
+		            System.out.println("3) Logout");
+		            System.out.print("Select an option: ");
+
+		            String choice = scanner.nextLine().trim();
+
+		            switch (choice) {
+		                case "1":
+		                    startQuizForStudent(student);
+		                    break;
+		                case "2":
+		                    showLastExamResult(student);
+		                    break;
+		                case "3":
+		                    System.out.println("Logging out.\n");
+		                    return;
+		                default:
+		                    System.out.println("Invalid option. Please try again.\n");
+		            }
+		        }
+		    }
+
+		    private static void showLastExamResult(Student student) {
+		        System.out.println("\n LAST EXAM RESULT ");
+		        System.out.println("Student : " + student.getFullName());
+		        System.out.println("Last Score : " + student.getLastScore());
+		        System.out.println("Correct Answer : " + student.getLastCorrectCount());
+		        System.out.println("Wrong Answer : " + student.getLastWrongCount());
+		        System.out.println();
+		    }
+
 
 
 
