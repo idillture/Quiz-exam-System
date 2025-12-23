@@ -1,7 +1,6 @@
 package quiz;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -17,17 +16,18 @@ public class QuizSystem {
 	 public static void main(String[] args) {
 		 
 		 initializeData();
-	    	
-		 while (true) {
-	            System.out.println(" QUIZ SYSTEM LOGIN ");
-	            System.out.print(" Username : ");
-	            System.out.print(" Exit ");
-	            String username = scanner.nextLine().trim();
+		 
+		 while (true) { 
+			 
+		 System.out.println(" QUIZ SYSTEM LOGIN ");
+		 System.out.println("Type 'exit' to quit.\n");
+		 System.out.print(" Username : ");
+		 String username = scanner.nextLine().trim();
 
-	            if (username.equalsIgnoreCase("Exit")) {
-	                System.out.println("Exiting the system.");
-	                break;
-	            }
+		 if (username.equalsIgnoreCase("exit")) {
+		     System.out.println("Exiting the system.");
+		     break;
+		 }
 	            
 	            System.out.print(" Password : ");
 	            String password = scanner.nextLine().trim();
@@ -119,7 +119,7 @@ public class QuizSystem {
 		    }
 		    
 		    private static void startQuizForStudent(Student student) {
-		        System.out.println("/n START NEW QUIZ ");
+		        System.out.println("\n  START NEW QUIZ ");
 		        System.out.println("The exam will have 10 questions:");
 		        System.out.println("5 True/False");
 		        System.out.println("5 Multiple Choice");
@@ -256,26 +256,82 @@ public class QuizSystem {
 		                return;
 		            }
 		        }
-		        System.out.println("No student found with " + id + "\n");
+		        System.out.println("No student found with ID: " + id + "\n");
 		    }
 		    
+		    private static void addQuestionFromTeacher() {
+		        System.out.println("\n ADD NEW QUESTION ");
+		        System.out.println("1) Multiple Choice Question");
+		        System.out.println("2) True/False Question");
+		        System.out.print("Select question type: ");
+
+		        String type = scanner.nextLine().trim();
+
+		        int id = askInt("Question ID: ");
+		        int difficulty = askInt("Difficulty (1–5): ");
+		        double points = askDouble("Points: ");
+
+		        System.out.print("Question text: ");
+		        String text = scanner.nextLine().trim();
+
+		        if (type.equals("1")) {
+		            // Multiple Choice with 4 options
+		            List<String> options = new ArrayList<>();
+
+		            for (int i = 0; i < 4; i++) {
+		                char letter = (char) ('a' + i);  
+		                System.out.print("Option " + letter + ": ");
+		                String opt = scanner.nextLine().trim();
+		                options.add(opt);
+		            }
+
+		            int correctIndex = askInt("Index of correct option (0 = a, 1 = b, 2 = c, 3 = d): ");
+
+		            MultipleChoiceQuestion mcq =
+		                    new MultipleChoiceQuestion(id, text, difficulty, options, correctIndex, points);
+
+		            questionBank.addQuestion(mcq);
+		            System.out.println("Multiple choice question added.\n");
+
+		        } else if (type.equals("2")) {
+		            // True / False
+		            System.out.print("Correct answer (true/false): ");
+		            String ans = scanner.nextLine().trim().toLowerCase();
+		            boolean correct = ans.startsWith("t"); 
+		            
+		            TrueFalseQuestion tfq =
+		                    new TrueFalseQuestion(id, text, difficulty, points, correct);
+
+		            questionBank.addQuestion(tfq);
+		            System.out.println("True/False question added.\n");
+
+		        } else {
+		            System.out.println("Invalid type. Question not added.\n");
+		        }
+		    }
 		    
+		    private static int askInt(String message) {
+		        while (true) {
+		            System.out.print(message);
+		            String line = scanner.nextLine().trim();
+		            try {
+		                return Integer.parseInt(line);
+		            } catch (NumberFormatException e) {
+		                System.out.println("Please enter a valid integer.");
+		            }
+		        }
+		    }
 
-
-
-
-	
-	 
-	 
-		 
-
-
-	    	
-	    	
-	    	
-	    	
-	    	
-	    }
-
-
+		    private static double askDouble(String message) {
+		        while (true) {
+		            System.out.print(message);
+		            String line = scanner.nextLine().trim();
+		            try {
+		                return Double.parseDouble(line);
+		            } catch (NumberFormatException e) {
+		                System.out.println("Please enter a valid number.");
+		            }
+		        }
+		    }
+}
 
