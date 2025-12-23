@@ -1,6 +1,10 @@
 	package quiz;
 
+	import java.io.BufferedReader;
+	import java.io.FileReader;
+	import java.io.IOException;
 	import java.util.ArrayList;
+	import java.util.Arrays;
 	import java.util.List;
 
 	public class QuestionBank {
@@ -57,5 +61,63 @@
 	        }
 	        return result;
 	    }
+	    
+	    public void loadFromCsv(String fileName) {
+	        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+
+	            String line;
+	            while ((line = br.readLine()) != null) {
+	                line = line.trim();
+	                if (line.isEmpty()) {
+	                    continue;
+	                }
+	                if (line.toLowerCase().startsWith("id;")) {
+	                    continue;
+	                }
+
+	                String[] parts = line.split(";", -1);
+	                if (parts.length < 7) {
+	                    System.out.println("Invalid line (not enough columns): " + line);
+	                    continue;
+	                }
+
+	                int id = Integer.parseInt(parts[0].trim());
+	                String type = parts[1].trim();
+	                int difficulty = Integer.parseInt(parts[2].trim());
+	                double points = Double.parseDouble(parts[3].trim());
+	                String text = parts[4].trim();
+	                String optionsPart = parts[5].trim();
+	                String answerPart = parts[6].trim();
+
+	                if (type.equalsIgnoreCase("MC")) {
+	                    List<String> options = new ArrayList<>();
+	                    if (!optionsPart.isEmpty()) {
+	                        options = Arrays.asList(optionsPart.split("\\|"));
+	                    }
+	                    int correctIndex = Integer.parseInt(answerPart);
+
+	                    MultipleChoiceQuestion mcq =
+	                        new MultipleChoiceQuestion(id, text, difficulty, options, correctIndex, points);
+	                    addQuestion(mcq);
+
+	                } else if (type.equalsIgnoreCase("TF")) {
+	                    boolean correctAnswer = Boolean.parseBoolean(answerPart.toLowerCase());
+
+	                    TrueFalseQuestion tfq =
+	                        new TrueFalseQuestion(id, text, difficulty, points, correctAnswer);
+	                    addQuestion(tfq);
+
+	                } else {
+	                    System.out.println("Unknown question type: " + type + " in line: " + line);
+	                }
+	            }
+
+	        } catch (IOException e) {
+	            System.out.println("Error while reading CSV file: " + e.getMessage());
+	        } catch (NumberFormatException e) {
+	            System.out.println("Error while parsing number in CSV: " + e.getMessage());
+	        }
+	    }
 	}
+	
 
