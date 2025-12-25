@@ -125,6 +125,20 @@
 	            System.out.println("Error while parsing number in CSV: " + e.getMessage());
 	        }
 	    }
+
+	    public int getNextQuestionId() {
+	        int maxId = 0;
+	        for (Question q : questions) {
+	            if (q.getId() > maxId) {
+	                maxId = q.getId();
+	            }
+	        }
+	        return maxId + 1;
+	    }
+
+	    public double calculatePoints(int difficulty) {
+	        return difficulty * 2.0;
+	    }
 	}
 	    
 	   
