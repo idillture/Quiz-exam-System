@@ -16,7 +16,7 @@ public class StudentCSVReader {
             String line = br.readLine(); 
 
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
+                String[] parts = line.split(";");
 
                 int id = Integer.parseInt(parts[0].trim());
                 String username = parts[1].trim();

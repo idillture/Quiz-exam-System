@@ -42,13 +42,12 @@ public class Student extends User {
 	    
 	    @Override
 	 public String toString() {
-	        return "Student:\n" +
-	               "  ID : " + getId() + "\n" +
-	               "  Username : " + getUsername() + "\n" +
-	               "  Full Name : " + getFullName() + "\n" +
-	               "  Last Score : " + lastScore + "\n" +
-	               "  Correct Answers : " + lastCorrectCount + "\n" +
-	               "  Wrong Answers : " + lastWrongCount;
+	        return 
+	               "   " + getId() + 
+	               "   " + getFullName() + 
+	               "   " + lastScore + 
+	               "   " + lastCorrectCount + 
+	               "   " + lastWrongCount + "\n" ;
 	    }
 }
 
