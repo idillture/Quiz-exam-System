@@ -7,331 +7,365 @@ import java.util.Scanner;
 
 public class QuizSystem {
 
-	 private static Teacher teacher;
-	 private static List<Student> students;
-	 private static QuestionBank questionBank;
+    private Teacher teacher;
+    private List<Student> students;
+    private QuestionBank questionBank;
+    private Scanner scanner;
 
-	 private static Scanner scanner = new Scanner(System.in);
+    public QuizSystem() {
+        scanner = new Scanner(System.in);
+        initializeData();
+    }
 
-	 public static void main(String[] args) {
-		 
-		 initializeData();
-		 
-		 while (true) { 
-			 
-		 System.out.println(" QUIZ SYSTEM LOGIN ");
-		 System.out.println("Type 'exit' to quit.\n");
-		 System.out.print(" Username : ");
-		 String username = scanner.nextLine().trim();
+    public void start() {
 
-		 if (username.equalsIgnoreCase("exit")) {
-		     System.out.println("Exiting the system.");
-		     break;
-		 }
-	            
-	            System.out.print(" Password : ");
-	            String password = scanner.nextLine().trim();
+        while (true) {
 
-	            User user = login(username, password);
+            System.out.println("\n QUIZ SYSTEM LOGIN ");
+            System.out.print("\n (type 'exit' to quit) \n Username: ");
+            String username = scanner.nextLine().trim();
 
-	            if (user == null) {
-	                System.out.println("Invalid username or password. \n");
-	            } 
-	            else if (user instanceof Teacher) {
-	                System.out.println("\nWelcome, " + user.getFullName() + "!\n");
-	                showTeacherMenu((Teacher) user);
-	            } 
-	            else if (user instanceof Student) {
-	                System.out.println("\nWelcome, " + user.getFullName() + "!\n");
-	                showStudentMenu((Student) user);
-	            }
-		 }
-		  scanner.close();
-	 }
-		  
-		  private static void initializeData() {
-		        teacher = new Teacher(99, "teacher", "12345", "Teacher");
+            if (username.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting system.");
+                break;
+            }
 
-		        students = new ArrayList<>();
-		        students.add(new Student(100, "idilture", "230303020", "İdil Türe"));
-		        students.add(new Student(101, "eylultuncel", "230303021", "Eylül Tuncel"));
-		        students.add(new Student(102, "sudenazibis", "230303022", "Sudenaz İbiş"));
+            if (username.isEmpty()) {
+                System.out.println("Invalid input.\n");
+                continue;
+            }
 
-		        questionBank = new QuestionBank();
+            System.out.print("Password: ");
+            String password = scanner.nextLine().trim();
 
-		        questionBank.loadFromCsv("questions.csv");
+            if (password.isEmpty()) {
+                System.out.println("Invalid input.\n");
+                continue;
+            }
 
-		        System.out.println("Loaded " + questionBank.getAllQuestions().size()
-		                + " questions from CSV.\n");
-		    }
-		  
-		  private static User login(String username, String password) {
-			  
-		        if (teacher.getUsername().equals(username) &&
-		            teacher.checkPassword(password)) {
-		            return teacher;
-		        }
+            User user = login(username, password);
 
-		        for (Student s : students) {
-		            if (s.getUsername().equals(username) &&
-		                s.checkPassword(password)) {
-		                return s;
-		            }
-		        }
+            if (user == null) {
+                System.out.println("Invalid username or password.\n");
+            } else if (user instanceof Teacher) {
+                System.out.println("\nWelcome, " + user.getFullName() + "!\n");
+                showTeacherMenu((Teacher) user);
+            } else {
+                System.out.println("\nWelcome, " + user.getFullName() + "!\n");
+                showStudentMenu((Student) user);
+            }
+        }
+    }
 
-		        return null;
-		    }
-		  
-		  //student menu
-		  private static void showStudentMenu(Student student) {
-		        while (true) {
-		            System.out.println(" STUDENT MENU ");
-		            System.out.println("1) Start new quiz");
-		            System.out.println("2) View last exam result");
-		            System.out.println("3) Logout");
-		            System.out.print("Select an option: ");
+    private void initializeData() {
 
-		            String choice = scanner.nextLine().trim();
+        teacher = new Teacher(1, "teacher", "12345", "Teacher");
 
-		            switch (choice) {
-		                case "1":
-		                    startQuizForStudent(student);
-		                    break;
-		                case "2":
-		                    showLastExamResult(student);
-		                    break;
-		                case "3":
-		                    System.out.println("Logging out.\n");
-		                    return;
-		                default:
-		                    System.out.println("Invalid option. Please try again.\n");
-		            }
-		        }
-		    }
+        students = StudentCSVReader.loadStudents("students.csv");
+        if (students == null) {
+            students = new ArrayList<>();
+        }
 
-		    private static void showLastExamResult(Student student) {
-		        System.out.println("\n LAST EXAM RESULT ");
-		        System.out.println("Student : " + student.getFullName());
-		        System.out.println("Last Score : " + student.getLastScore());
-		        System.out.println("Correct Answers : " + student.getLastCorrectCount());
-		        System.out.println("Wrong Answers : " + student.getLastWrongCount());
-		        System.out.println();
-		    }
-		    
-		    private static void startQuizForStudent(Student student) {
-		        System.out.println("\n  START NEW QUIZ ");
-		        System.out.println("The exam will have 10 questions:");
-		        System.out.println("5 True/False");
-		        System.out.println("5 Multiple Choice");
+        questionBank = new QuestionBank();
+        questionBank.loadFromCsv("questions.csv");
 
-		        List<Question> examQuestions = new ArrayList<>();
+        System.out.println("Loaded " + students.size() + " students.");
+        System.out.println("Loaded " + questionBank.getAllQuestions().size() + " questions.");
+    }
 
-		        // For each difficulty from 1 to 5, pick 1 TF and 1 MC
-		        for (int difficulty = 1; difficulty <= 5; difficulty++) {
+    // LOGIN 
 
-		            List<TrueFalseQuestion> tfList =
-		                    questionBank.getTrueFalseQuestionsByDifficulty(difficulty);
-		            List<MultipleChoiceQuestion> mcList =
-		                    questionBank.getMultipleChoiceQuestionsByDifficulty(difficulty);
+    private User login(String username, String password) {
 
-		            if (tfList.isEmpty() || mcList.isEmpty()) {
-		                System.out.println("Not enough questions for difficulty " + difficulty +
-		                        ". Need at least 1 TF and 1 MC.");
-		                System.out.println("Quiz cannot be started. Please ask teacher to add more questions.\n");
-		                return;
-		            }
+        if (teacher.getUsername().equals(username) &&
+                teacher.checkPassword(password)) {
+            return teacher;
+        }
 
-		            // Shuffle lists so we pick a random question from each
-		            Collections.shuffle(tfList);
-		            Collections.shuffle(mcList);
+        for (Student s : students) {
+            if (s.getUsername().equals(username) &&
+                    s.checkPassword(password)) {
+                return s;
+            }
+        }
+        return null;
+    }
 
-		            examQuestions.add(tfList.get(0));
-		            examQuestions.add(mcList.get(0));
-		        }
+    // STUDENT MENU 
 
-		        // Shuffle the final list so the order is mixed 
-		        Collections.shuffle(examQuestions);
+    private void showStudentMenu(Student student) {
+        while (true) {
+            System.out.println("\n STUDENT MENU ");
+            System.out.println("1) Start new quiz");
+            System.out.println("2) View last exam result");
+            System.out.println("3) Logout");
+            System.out.print("Select option: ");
 
-		        Quiz quiz = new Quiz(1, "Mixed difficulty quiz");
-		        for (Question q : examQuestions) {
-		            quiz.addQuestion(q);
-		        }
+            switch (scanner.nextLine().trim()) {
+                case "1" -> startQuizForStudent(student);
+                case "2" -> showLastExamResult(student);
+                case "3" -> {
+                    System.out.println("Logging out.\n");
+                    return;
+                }
+                default -> System.out.println("Invalid option.\n");
+            }
+        }
+    }
 
-		        double totalScore = 0.0;
-		        int correctCount = 0;
-		        int wrongCount = 0;
+    private void showLastExamResult(Student student) {
+        System.out.println("\n LAST EXAM RESULT ");
+        System.out.println("Score : " + student.getLastScore());
+        System.out.println("Correct Answers : " + student.getLastCorrectCount());
+        System.out.println("Wrong Answers : " + student.getLastWrongCount());
+    }
 
-		        System.out.println(" Answer the following questions: \n");
+    // QUIZ 
 
-		        int index = 1;
-		        for (Question q : quiz.getQuestions()) {
-		            System.out.println("Question " + index + ": " + q.getText());
+    private void startQuizForStudent(Student student) {
 
-		            if (q instanceof MultipleChoiceQuestion) {
-		                MultipleChoiceQuestion mcq = (MultipleChoiceQuestion) q;
-		                mcq.shuffleOptions(); // shuffle options 
+        System.out.println("\n STARTING QUIZ ");
 
-		                List<String> options = mcq.getOptions();
-		                char letter = 'a';
-		                for (String opt : options) {
-		                    System.out.println("  " + letter + ") " + opt);
-		                    letter++;
-		                }
-		                System.out.print("Your answer : ");
+        List<Question> examQuestions = new ArrayList<>();
 
-		            } else if (q instanceof TrueFalseQuestion) {
-		                System.out.print("Your answer : ");
-		            }
+        for (int difficulty = 1; difficulty <= 5; difficulty++) {
 
-		            String answer = scanner.nextLine();
-		            boolean correct = q.checkAnswer(answer);
+            List<TrueFalseQuestion> tf =
+                    questionBank.getTrueFalseQuestionsByDifficulty(difficulty);
+            List<MultipleChoiceQuestion> mc =
+                    questionBank.getMultipleChoiceQuestionsByDifficulty(difficulty);
 
-		            if (correct) {
-		                System.out.println("Correct\n");
-		                correctCount++;
-		                totalScore += q.getPoints();
-		            } else {
-		                System.out.println("Wrong\n");
-		                wrongCount++;
-		            }
-		            index++;
-		        }
+            if (tf.isEmpty() || mc.isEmpty()) {
+                System.out.println("Not enough questions for difficulty " + difficulty);
+                return;
+            }
 
-		        // Save last exam results
-		        student.setLastScore(totalScore);
-		        student.setLastCorrectCount(correctCount);
-		        student.setLastWrongCount(wrongCount);
+            Collections.shuffle(tf);
+            Collections.shuffle(mc);
 
-		        System.out.println(" QUIZ FINISHED ");
-		        System.out.println("Total Score   : " + totalScore);
-		        System.out.println("Correct Answers : " + correctCount);
-		        System.out.println("Wrong Answers : " + wrongCount + "\n");
-		    }
-		    
-		    //teacher menu
-		    private static void showTeacherMenu(Teacher teacher) {
-		        while (true) {
-		            System.out.println(" TEACHER MENU ");
-		            System.out.println("1) View all students last results");
-		            System.out.println("2) Search student by ID");
-		            System.out.println("3) Add new question");
-		            System.out.println("4) Logout");
-		            System.out.print("Select an option: ");
+            examQuestions.add(tf.get(0));
+            examQuestions.add(mc.get(0));
+        }
 
-		            String choice = scanner.nextLine().trim();
+        Collections.shuffle(examQuestions);
 
-		            switch (choice) {
-		                case "1":
-		                    viewAllStudentResults();
-		                    break;
-		                case "2":
-		                    searchStudentById();
-		                    break;
-		                case "3":
-		                    addQuestionFromTeacher();
-		                    break;
-		                case "4":
-		                    System.out.println("Logging out.\n");
-		                    return;
-		                default:
-		                    System.out.println("Invalid option. Please try again.\n");
-		            }
-		        }
-		    }
+        double totalScore = 0;
+        int correct = 0;
+        int wrong = 0;
 
-		    private static void viewAllStudentResults() {
-		        System.out.println("\n ALL STUDENT RESULTS ");
-		        for (Student s : students) {
-		            System.out.println(s.toString());
-		        }
-		        System.out.println();
-		    }
+        int index = 1;
+        for (Question q : examQuestions) {
 
-		    private static void searchStudentById() {
-		        int id = askInt("\nEnter student ID: ");
+            System.out.println("\nQuestion " + index + ": " + q.getText());
 
-		        for (Student s : students) {
-		            if (s.getId() == id) {
-		                System.out.println("Students results :\n" + s.toString() + "\n");
-		                return;
-		            }
-		        }
-		        System.out.println("No student found with ID: " + id + "\n");
-		    }
-		    
-		    private static void addQuestionFromTeacher() {
-		        System.out.println("\n ADD NEW QUESTION ");
-		        System.out.println("1) Multiple Choice Question");
-		        System.out.println("2) True/False Question");
-		        System.out.print("Select question type: ");
+            if (q instanceof MultipleChoiceQuestion mcq) {
+                mcq.shuffleOptions();
+                char letter = 'a';
+                for (String opt : mcq.getOptions()) {
+                    System.out.println("  " + letter++ + ") " + opt);
+                }
+            }
 
-		        String type = scanner.nextLine().trim();
+            System.out.print("Your answer: ");
+            boolean isCorrect = q.checkAnswer(scanner.nextLine());
 
-		        int id = askInt("Question ID: ");
-		        int difficulty = askInt("Difficulty (1–5): ");
-		        double points = askDouble("Points: ");
+            if (isCorrect) {
+                System.out.println("Correct");
+                totalScore += q.getPoints();
+                correct++;
+            } else {
+                System.out.println("Wrong");
+                wrong++;
+            }
+            index++;
+        }
 
-		        System.out.print("Question text: ");
-		        String text = scanner.nextLine().trim();
+        student.setLastScore(totalScore);
+        student.setLastCorrectCount(correct);
+        student.setLastWrongCount(wrong);
 
-		        if (type.equals("1")) {
-		            // Multiple Choice with 4 options
-		            List<String> options = new ArrayList<>();
+        System.out.println("\n QUIZ FINISHED ");
+        System.out.println("Total Score    : " + totalScore);
+        System.out.println("Correct Answers: " + correct);
+        System.out.println("Wrong Answers  : " + wrong);
+    }
 
-		            for (int i = 0; i < 4; i++) {
-		                char letter = (char) ('a' + i);  
-		                System.out.print("Option " + letter + ": ");
-		                String opt = scanner.nextLine().trim();
-		                options.add(opt);
-		            }
+    // TEACHER MENU 
 
-		            int correctIndex = askInt("Index of correct option (0 = a, 1 = b, 2 = c, 3 = d): ");
+    private void showTeacherMenu(Teacher teacher) {
+        while (true) {
+            System.out.println("\n TEACHER MENU ");
+            System.out.println("1) View all students results");
+            System.out.println("2) Search student by ID");
+            System.out.println("3) Add new question");
+            System.out.println("4) Logout");
+            System.out.print("Select option: ");
 
-		            MultipleChoiceQuestion mcq =
-		                    new MultipleChoiceQuestion(id, text, difficulty, options, correctIndex, points);
+            switch (scanner.nextLine().trim()) {
+                case "1" -> viewAllStudentResults();
+                case "2" -> searchStudentById();
+                case "3" -> addQuestionFromTeacher();
+                case "4" -> {
+                    System.out.println("Logging out.\n");
+                    return;
+                }
+                default -> System.out.println("Invalid option.\n");
+            }
+        }
+    }
+    
+    private void viewAllStudentResults() {
 
-		            questionBank.addQuestion(mcq);
-		            System.out.println("Multiple choice question added.\n");
+        System.out.println("\nALL STUDENTS RESULTS");
+        System.out.println("ID   NAME                 SCORE  CORRECT  WRONG");
 
-		        } else if (type.equals("2")) {
-		            // True / False
-		            System.out.print("Correct answer (true/false): ");
-		            String ans = scanner.nextLine().trim().toLowerCase();
-		            boolean correct = ans.startsWith("t"); 
-		            
-		            TrueFalseQuestion tfq =
-		                    new TrueFalseQuestion(id, text, difficulty, points, correct);
+        for (Student s : students) {
+            System.out.printf(
+                    "%-4d %-20s %-6.1f %-8d %-5d%n",
+                    s.getId(),s.getFullName(),s.getLastScore(),s.getLastCorrectCount(),s.getLastWrongCount()
+            );
+        }
 
-		            questionBank.addQuestion(tfq);
-		            System.out.println("True/False question added.\n");
+        System.out.println();
+    }
+    
+    private void searchStudentById() {
+        int id = askInt("Enter student ID: ");
+        students.stream() .filter(s -> s.getId() == id) .findFirst() .ifPresentOrElse(
+                        System.out::println,
+                        () -> System.out.println("No student found.")
+                );
+    }
+    private String askStringOrCancel(String msg) {
+        System.out.print(msg);
+        String input = scanner.nextLine().trim();
 
-		        } else {
-		            System.out.println("Invalid type. Question not added.\n");
-		        }
-		    }
-		    
-		    private static int askInt(String message) {
-		        while (true) {
-		            System.out.print(message);
-		            String line = scanner.nextLine().trim();
-		            try {
-		                return Integer.parseInt(line);
-		            } catch (NumberFormatException e) {
-		                System.out.println("Please enter a valid integer.");
-		            }
-		        }
-		    }
+        if (input.equalsIgnoreCase("cancel")) {
+            return null;
+        }
+        if (input.isEmpty()) {
+            System.out.println("Input cannot be empty.");
+            return askStringOrCancel(msg);
+        }
+        return input;
+    }
+    private int askIntInRangeOrCancel(String msg, int min, int max) {
 
-		    private static double askDouble(String message) {
-		        while (true) {
-		            System.out.print(message);
-		            String line = scanner.nextLine().trim();
-		            try {
-		                return Double.parseDouble(line);
-		            } catch (NumberFormatException e) {
-		                System.out.println("Please enter a valid number.");
-		            }
-		        }
-		    }
+        int attempts = 3;
+
+        while (attempts-- > 0) {
+            System.out.print(msg);
+            String input = scanner.nextLine().trim();
+
+            if (input.equalsIgnoreCase("cancel")) {
+                return -1;
+            }
+
+            try {
+                int value = Integer.parseInt(input);
+                if (value >= min && value <= max) {
+                    return value;
+                }
+            } catch (NumberFormatException ignored) {}
+
+            System.out.println("Invalid input (" + (attempts) + " attempt(s) left)");
+        }
+
+        System.out.println("Too many invalid attempts. Cancelled.");
+        return -1;
+    }
+
+    // ADD QUESTION 
+    
+    private void addQuestionFromTeacher() {
+
+        System.out.println("\n ADD NEW QUESTION ");
+        System.out.println("(type 'cancel' anytime to abort)");
+
+        System.out.print("Type (1 = MC, 2 = TF): ");
+        String type = scanner.nextLine().trim();
+
+        if (type.equalsIgnoreCase("cancel")) return;
+        if (!type.equals("1") && !type.equals("2")) {
+            System.out.println("Invalid type.\n");
+            return;
+        }
+
+        int difficulty = askIntInRangeOrCancel("Difficulty (1–5): ", 1, 5);
+        if (difficulty == -1) return;
+
+        int id = questionBank.getNextQuestionId();
+        double points = questionBank.calculatePoints(difficulty);
+
+        System.out.println("ID: " + id + " | Points: " + points);
+
+        String text = askStringOrCancel("Question text: ");
+        if (text == null) return;
+        
+        if (type.equals("1")) {
+            List<String> options = new ArrayList<>();
+
+            for (int i = 0; i < 4; i++) {
+                String opt = askStringOrCancel("Option " + (char) ('a' + i) + ": ");
+                if (opt == null) return;
+
+                opt = opt.trim();
+
+                if (options.contains(opt)) {
+                    System.out.println("This option already exists. Please enter a different one.");
+                    i--;          
+                    continue;    
+                }
+
+                options.add(opt);
+            }
+
+            int correct = askIntInRangeOrCancel("Correct index (0–3): ", 0, 3);
+            if (correct == -1) return;
+
+            questionBank.addQuestion(
+                new MultipleChoiceQuestion(id, text, difficulty, options, correct, points)
+            );
+        }
+
+         else {
+
+            boolean correct;
+            while (true) {
+                String input = askStringOrCancel("Correct answer (true/false): ");
+                if (input == null) return;
+
+                if (input.equalsIgnoreCase("true")) {
+                    correct = true;
+                    break;
+                }
+                if (input.equalsIgnoreCase("false")) {
+                    correct = false;
+                    break;
+                }
+                System.out.println("Please enter 'true' or 'false'.");
+            }
+
+            questionBank.addQuestion(
+                    new TrueFalseQuestion(id, text, difficulty, points, correct)
+            );
+        }
+
+        System.out.println("Question added successfully.\n");
+    }
+
+
+
+    // HELPERS
+
+    private int askInt(String msg) {
+        while (true) {
+            try {
+                System.out.print(msg);
+                return Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number.");
+            }
+        }
+    }
 }
-
