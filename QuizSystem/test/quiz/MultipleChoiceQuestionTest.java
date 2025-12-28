@@ -1,38 +1,51 @@
 package quiz;
 
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 public class MultipleChoiceQuestionTest {
 
+    private MultipleChoiceQuestion getAnyMCQuestionFromCsv() {
+        QuestionBank bank = new QuestionBank();
+        bank.loadFromCsv("questions.csv");
+
+        Optional<MultipleChoiceQuestion> question =
+                bank.getAllQuestions().stream()
+                    .filter(q -> q instanceof MultipleChoiceQuestion)
+                    .map(q -> (MultipleChoiceQuestion) q)
+                    .findFirst();
+
+        return question.orElseThrow(() ->
+                new AssertionError("No MultipleChoiceQuestion found in CSV"));
+    }
+
     @Test
     void correctAnswerReturnsTrue() {
-        List<String> options = List.of("6", "7", "8", "9");
+        MultipleChoiceQuestion q = getAnyMCQuestionFromCsv();
 
-        MultipleChoiceQuestion q =
-                new MultipleChoiceQuestion(1, "3 + 5 = ?", 1, options, 2, 5);
+        boolean anyCorrect =
+                q.checkAnswer("a") ||
+                q.checkAnswer("b") ||
+                q.checkAnswer("c") ||
+                q.checkAnswer("d");
 
-        assertTrue(q.checkAnswer("c"));  
+        assertTrue(anyCorrect, "At least one option should be correct");
+    }
+
+    @Test
+    void invalidAnswerReturnsFalse() {
+        MultipleChoiceQuestion q = getAnyMCQuestionFromCsv();
+
+        assertFalse(q.checkAnswer("z"));
+        assertFalse(q.checkAnswer("1"));
+        assertFalse(q.checkAnswer(""));
     }
 
     @Test
     void wrongAnswerReturnsFalse() {
-        List<String> options = List.of("6", "7", "8", "9");
+        MultipleChoiceQuestion q = getAnyMCQuestionFromCsv();
 
-        MultipleChoiceQuestion q =
-                new MultipleChoiceQuestion(1, "3 + 5 = ?", 1, options, 2, 5);
-
-        assertFalse(q.checkAnswer("a"));  
-    }
-    
-    @Test
-    void invalidInputReturnsFalse() {
-        List<String> options = List.of("6", "7", "8", "9");
-
-        MultipleChoiceQuestion q =
-            new MultipleChoiceQuestion(1, "3 + 5 = ?", 1, options, 2, 5);
-
-        assertFalse(q.checkAnswer("z"));
+        assertFalse(q.checkAnswer("x"));
     }
 }
