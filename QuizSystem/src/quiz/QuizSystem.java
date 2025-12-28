@@ -165,9 +165,37 @@ public class QuizSystem {
                     System.out.println("  " + letter++ + ") " + opt);
                 }
             }
-
+            
             System.out.print("Your answer: ");
-            boolean isCorrect = q.checkAnswer(scanner.nextLine());
+            String answer;
+
+            while (true) {
+                answer = scanner.nextLine().trim().toLowerCase();
+
+                if (answer.isEmpty()) {
+                    System.out.print("Answer cannot be empty. Please try again: ");
+                    continue;
+                }
+                if (q instanceof MultipleChoiceQuestion) {
+                    if (!answer.matches("[abcd]")) {
+                        System.out.println("Please enter a valid option (a, b, c, or d).");
+                        continue;
+                    }
+                }
+                if (q instanceof TrueFalseQuestion) {
+                    if (!(answer.equals("true") || answer.equals("false")
+                    		|| answer.equals("t") || answer.equals("f")
+                            || answer.equals("yes") || answer.equals("no")
+                            || answer.equals("y") || answer.equals("n"))) {
+
+                        System.out.println("Please enter true/false, t/f, yes/no, or y/n.");
+                        continue;
+                    }
+                }
+                break;
+            }
+
+            boolean isCorrect = q.checkAnswer(answer);
 
             if (isCorrect) {
                 System.out.println("Correct");
