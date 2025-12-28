@@ -1,9 +1,9 @@
 	package quiz;
 
 	import java.io.BufferedReader;
-	import java.io.FileReader;
-	import java.io.IOException;
-	import java.util.ArrayList;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 	import java.util.Arrays;
 	import java.util.List;
 
@@ -62,27 +62,36 @@
 	        return result;
 	    }
 	    
-	    public void loadFromCsv(String fileName) {
-	        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+	    public void loadFromCsv(String filename) {
+
+	        try {
+	            InputStream is = QuestionBank.class
+	                    .getClassLoader()
+	                    .getResourceAsStream(filename);
+
+	            if (is == null) {
+	                System.err.println("Questions CSV not found: " + filename);
+	                return;
+	            }
+
+	            BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 	            String line;
-	            boolean isFirstLine = true; 
+	            boolean isFirstLine = true;
 
 	            while ((line = br.readLine()) != null) {
 
 	                line = line.trim();
-	                if (line.isEmpty()) {
-	                    continue; 
-	                }
+	                if (line.isEmpty()) continue;
 
-	                if (isFirstLine) {
+	                if (isFirstLine) { // header
 	                    isFirstLine = false;
 	                    continue;
 	                }
 
 	                String[] parts = line.split(";", -1);
 	                if (parts.length < 7) {
-	                    System.out.println("Invalid line (not enough columns): " + line);
+	                    System.out.println("Invalid line: " + line);
 	                    continue;
 	                }
 
@@ -95,36 +104,37 @@
 	                String answerPart = parts[6].trim();
 
 	                if (type.equalsIgnoreCase("MC")) {
-	                    // options: "6|7|8|9"
+
 	                    List<String> options = new ArrayList<>();
 	                    if (!optionsPart.isEmpty()) {
 	                        options = Arrays.asList(optionsPart.split("\\|"));
 	                    }
+
 	                    int correctIndex = Integer.parseInt(answerPart);
 
-	                    MultipleChoiceQuestion mcq =
-	                            new MultipleChoiceQuestion(id, text, difficulty, options, correctIndex, points);
-	                    addQuestion(mcq);
+	                    addQuestion(new MultipleChoiceQuestion(
+	                            id, text, difficulty, options, correctIndex, points
+	                    ));
 
 	                } else if (type.equalsIgnoreCase("TF")) {
-	                    // TRUE / FALSE
-	                    boolean correctAnswer = Boolean.parseBoolean(answerPart.toLowerCase());
 
-	                    TrueFalseQuestion tfq =
-	                            new TrueFalseQuestion(id, text, difficulty, points, correctAnswer);
-	                    addQuestion(tfq);
+	                    boolean correctAnswer = Boolean.parseBoolean(answerPart);
+
+	                    addQuestion(new TrueFalseQuestion(
+	                            id, text, difficulty, points, correctAnswer
+	                    ));
 
 	                } else {
-	                    System.out.println("Unknown question type: " + type + " in line: " + line);
+	                    System.out.println("Unknown question type: " + type);
 	                }
 	            }
 
-	        } catch (IOException e) {
-	            System.out.println("Error while reading CSV file: " + e.getMessage());
-	        } catch (NumberFormatException e) {
-	            System.out.println("Error while parsing number in CSV: " + e.getMessage());
+	        } catch (Exception e) {
+	            System.err.println("Error reading questions CSV: " + e.getMessage());
 	        }
 	    }
+	    
+
 
 	    public int getNextQuestionId() {
 	        int maxId = 0;
