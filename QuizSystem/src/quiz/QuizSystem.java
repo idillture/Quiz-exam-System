@@ -211,6 +211,9 @@ public class QuizSystem {
         student.setLastScore(totalScore);
         student.setLastCorrectCount(correct);
         student.setLastWrongCount(wrong);
+        
+        int examId = questionBank.getNextQuestionId(); 
+        ExamResultCSV.saveResult(student, totalScore, correct, wrong, examId);
 
         System.out.println("\n QUIZ FINISHED ");
         System.out.println("Total Score    : " + totalScore);
@@ -226,14 +229,16 @@ public class QuizSystem {
             System.out.println("1) View all students results");
             System.out.println("2) Search student by ID");
             System.out.println("3) Add new question");
-            System.out.println("4) Logout");
+            System.out.println("4) Add new student");
+            System.out.println("5) Logout");
             System.out.print("Select option: ");
 
             switch (scanner.nextLine().trim()) {
                 case "1" -> viewAllStudentResults();
                 case "2" -> searchStudentById();
                 case "3" -> addQuestionFromTeacher();
-                case "4" -> {
+                case "4" -> addStudentFromTeacher();
+                case "5" -> {
                     System.out.println("Logging out.\n");
                     return;
                 }
@@ -245,6 +250,7 @@ public class QuizSystem {
     private void viewAllStudentResults() {
 
         System.out.println("\nALL STUDENTS RESULTS");
+        System.out.println("Total students: " + students.size());
         System.out.println("ID   NAME                 SCORE  CORRECT  WRONG");
 
         for (Student s : students) {
@@ -350,10 +356,12 @@ public class QuizSystem {
 
             int correct = askIntInRangeOrCancel("Correct index (0–3): ", 0, 3);
             if (correct == -1) return;
+            MultipleChoiceQuestion mcq =
+            	    new MultipleChoiceQuestion(id, text, difficulty, options, correct, points);
 
-            questionBank.addQuestion(
-                new MultipleChoiceQuestion(id, text, difficulty, options, correct, points)
-            );
+            	questionBank.addQuestion(mcq);
+            	questionBank.saveQuestionToCsv(mcq);
+
         }
 
          else {
@@ -374,15 +382,37 @@ public class QuizSystem {
                 System.out.println("Please enter 'true' or 'false'.");
             }
 
-            questionBank.addQuestion(
-                    new TrueFalseQuestion(id, text, difficulty, points, correct)
-            );
+            TrueFalseQuestion tfq =
+            	    new TrueFalseQuestion(id, text, difficulty, points, correct);
+
+            	questionBank.addQuestion(tfq);
+            	questionBank.saveQuestionToCsv(tfq);
         }
 
         System.out.println("Question added successfully.\n");
     }
+    private void addStudentFromTeacher() {
 
+        System.out.println("\n ADD NEW STUDENT ");
 
+        int id = students.size() + 1;
+
+        String username = askStringOrCancel("Username: ");
+        if (username == null) return;
+
+        String password = askStringOrCancel("Password: ");
+        if (password == null) return;
+
+        String fullname = askStringOrCancel("Full name: ");
+        if (fullname == null) return;
+
+        Student s = new Student(id, username, password, fullname);
+
+        students.add(s);
+        StudentCSVReader.saveStudent(s);
+
+        System.out.println("Student added successfully.\n");
+    }
 
     // HELPERS
 

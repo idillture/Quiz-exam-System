@@ -1,6 +1,7 @@
 	package quiz;
 
 	import java.io.BufferedReader;
+	import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -75,40 +76,35 @@ import java.util.ArrayList;
 	            }
 
 	            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
 	            String line;
-	            boolean isFirstLine = true;
+	            boolean header = true;
 
 	            while ((line = br.readLine()) != null) {
 
-	                line = line.trim();
-	                if (line.isEmpty()) continue;
+	                if (line.isBlank()) continue;
 
-	                if (isFirstLine) { // header
-	                    isFirstLine = false;
+	                if (header) {
+	                    header = false;
 	                    continue;
 	                }
 
 	                String[] parts = line.split(";", -1);
-	                if (parts.length < 7) {
-	                    System.out.println("Invalid line: " + line);
-	                    continue;
-	                }
+	                if (parts.length < 7) continue;
 
-	                int id = Integer.parseInt(parts[0].trim());
-	                String type = parts[1].trim();
-	                int difficulty = Integer.parseInt(parts[2].trim());
-	                double points = Double.parseDouble(parts[3].trim());
-	                String text = parts[4].trim();
-	                String optionsPart = parts[5].trim();
-	                String answerPart = parts[6].trim();
+	                int id = Integer.parseInt(parts[0]);
+	                String type = parts[1];
+	                int difficulty = Integer.parseInt(parts[2]);
+	                double points = Double.parseDouble(parts[3]);
+	                String text = parts[4];
+	                String optionsPart = parts[5];
+	                String answerPart = parts[6];
 
 	                if (type.equalsIgnoreCase("MC")) {
 
-	                    List<String> options = new ArrayList<>();
-	                    if (!optionsPart.isEmpty()) {
-	                        options = Arrays.asList(optionsPart.split("\\|"));
-	                    }
+	                    List<String> options =
+	                            optionsPart.isEmpty()
+	                                    ? new ArrayList<>()
+	                                    : Arrays.asList(optionsPart.split("\\|"));
 
 	                    int correctIndex = Integer.parseInt(answerPart);
 
@@ -118,14 +114,11 @@ import java.util.ArrayList;
 
 	                } else if (type.equalsIgnoreCase("TF")) {
 
-	                    boolean correctAnswer = Boolean.parseBoolean(answerPart);
+	                    boolean correct = Boolean.parseBoolean(answerPart);
 
 	                    addQuestion(new TrueFalseQuestion(
-	                            id, text, difficulty, points, correctAnswer
+	                            id, text, difficulty, points, correct
 	                    ));
-
-	                } else {
-	                    System.out.println("Unknown question type: " + type);
 	                }
 	            }
 
@@ -133,8 +126,45 @@ import java.util.ArrayList;
 	            System.err.println("Error reading questions CSV: " + e.getMessage());
 	        }
 	    }
-	    
 
+
+	    public void saveQuestionToCsv(Question q) {
+
+	        String filename = "questions_runtime.csv";
+
+	        try (FileWriter fw = new FileWriter(filename, true)) {
+	            fw.write("\n" + toCsvLine(q));
+	            System.out.println(" Question written to CSV. ");
+	            System.out.println("Path: " + new java.io.File(filename).getAbsolutePath());
+
+	        } catch (Exception e) {
+	            System.out.println("Error writing to CSV: " + e.getMessage());
+	        }
+	    }
+
+	    private String toCsvLine(Question q) {
+
+	        if (q instanceof MultipleChoiceQuestion mcq) {
+	            String options = String.join("|", mcq.getOptions());
+
+	            return mcq.getId() + ";MC;"
+	                    + mcq.getDifficulty() + ";"
+	                    + mcq.getPoints() + ";"
+	                    + mcq.getText() + ";"
+	                    + options + ";"
+	                    + mcq.getCorrectOptionIndex();
+	        }
+
+	        if (q instanceof TrueFalseQuestion tfq) {
+	            return tfq.getId() + ";TF;"
+	                    + tfq.getDifficulty() + ";"
+	                    + tfq.getPoints() + ";"
+	                    + tfq.getText() + ";;"
+	                    + tfq.isCorrectAnswer();
+	        }
+
+	        throw new IllegalArgumentException("Unknown question type");
+	    }
 
 	    public int getNextQuestionId() {
 	        int maxId = 0;

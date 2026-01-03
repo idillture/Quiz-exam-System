@@ -1,6 +1,7 @@
 package quiz;
 
 import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ public class StudentCSVReader {
 
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-            // ✅ HEADER'I ATLA
             br.readLine();
 
             String line;
@@ -32,7 +32,6 @@ public class StudentCSVReader {
 
                 if (line.isBlank()) continue;
 
-                // ✅ CSV ayırıcı (senin dosyana göre değiştir)
                 String[] parts = line.split("[,;]");
 
                 if (parts.length < 4) {
@@ -53,5 +52,26 @@ public class StudentCSVReader {
         }
 
         return students;
+    }
+    public static void saveStudent(Student student) {
+
+        String filename = "students_runtime.csv";
+
+        try (FileWriter fw = new FileWriter(filename, true)) {
+
+            fw.write("\n"
+                    + student.getId() + ","
+                    + student.getUsername() + ","
+                    + student.getPassword() + ","
+                    + student.getFullName()
+            );
+
+            System.out.println("Student saved.");
+            System.out.println("Path: "
+                    + new java.io.File(filename).getAbsolutePath());
+
+        } catch (Exception e) {
+            System.out.println("Error writing student CSV: " + e.getMessage());
+        }
     }
 }

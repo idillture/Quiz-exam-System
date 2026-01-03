@@ -49,5 +49,10 @@ public class Student extends User {
 	               "   " + lastCorrectCount + 
 	               "   " + lastWrongCount + "\n" ;
 	    }
+
+		public String getPassword() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 }
 
