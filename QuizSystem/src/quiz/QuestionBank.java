@@ -6,8 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class QuestionBank {
+	
+    public static final String RUNTIME_FILE = "questions_runtime.csv";
 
-    private List<Question> questions;
+
+    private final List<Question> questions;
 
     public QuestionBank() {
         this.questions = new ArrayList<>();
@@ -56,20 +59,23 @@ public class QuestionBank {
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
                     readQuestions(br);
                 }
+                return;
             }
         } catch (Exception e) {
             System.err.println("Error reading questions from resources: " + e.getMessage());
         }
 
         File file = new File(filename);
-           if (file.exists()) {
+           if (!file.exists()) {
+        	   System.err.println("Questions CSV not found: " + filename);
+               return;
+           }
      try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 readQuestions(br);
             } catch (Exception e) {
                 System.err.println("Error reading questions from file: " + e.getMessage());
             }
         }
-    }
 
     public void loadFromRuntimeCsv(String runtimeFilename) {
             File file = new File(runtimeFilename);
@@ -98,6 +104,9 @@ public class QuestionBank {
             if (parts.length < 7) continue;
 
             int id = Integer.parseInt(parts[0].trim());
+            if (questions.stream().anyMatch(q -> q.getId() == id)) {
+                continue;
+            }
             String type = parts[1].trim();
           int difficulty = Integer.parseInt(parts[2].trim());
             double points = Double.parseDouble(parts[3].trim());
@@ -170,4 +179,5 @@ public class QuestionBank {
     public double calculatePoints(int difficulty) {
         return difficulty * 2.0;
     }
+    
 }
