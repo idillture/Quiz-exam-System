@@ -1,6 +1,11 @@
 package quiz;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +20,7 @@ public class StudentCSVReader {
     }
 
     public static void loadStudentsInto(String filename, List<Student> students) {
-        if (students == null) return;
+        if (students == null || filename == null || filename.isBlank()) return;
 
         InputStream is = StudentCSVReader.class.getClassLoader().getResourceAsStream(filename);
         if (is != null) {
@@ -37,7 +42,7 @@ public class StudentCSVReader {
         }
     }
 
-    private static void readAll(BufferedReader br, List<Student> students) throws IOException {
+    private static void readAll(BufferedReader br, List<Student> students) throws Exception {
         String firstLine = br.readLine();
         if (firstLine == null) return;
 
@@ -53,9 +58,9 @@ public class StudentCSVReader {
     }
 
     private static boolean looksLikeData(String line) {
-        line = line.trim();
-        if (line.isEmpty()) return false;
-        return Character.isDigit(line.charAt(0));
+        String t = line.trim();
+        if (t.isEmpty()) return false;
+        return Character.isDigit(t.charAt(0));
     }
 
     private static void addFromLine(String line, List<Student> students) {
@@ -67,21 +72,17 @@ public class StudentCSVReader {
         String password = parts[2].trim();
         String fullName = parts[3].trim();
 
-        if (existsByIdOrUsername(students, id, username)) return;
-
         students.add(new Student(id, username, password, fullName));
     }
 
-    private static boolean existsByIdOrUsername(List<Student> students, int id, String username) {
-        for (Student s : students) {
-            if (s.getId() == id) return true;
-            if (s.getUsername().equalsIgnoreCase(username)) return true;
-        }
-        return false;
+    public static void saveStudent(Student student) {
+        saveStudent(student, RUNTIME_FILE);
     }
 
-    public static void saveStudent(Student student) {
-        File file = new File(RUNTIME_FILE);
+    public static void saveStudent(Student student, String filename) {
+        if (student == null || filename == null || filename.isBlank()) return;
+
+        File file = new File(filename);
 
         try {
             boolean newFile = !file.exists() || file.length() == 0;
@@ -106,8 +107,10 @@ public class StudentCSVReader {
 
     public static int getNextStudentId(List<Student> students) {
         int max = 0;
-        for (Student s : students) {
-            if (s.getId() > max) max = s.getId();
+        if (students != null) {
+            for (Student s : students) {
+                if (s.getId() > max) max = s.getId();
+            }
         }
         return max + 1;
     }
