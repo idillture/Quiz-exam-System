@@ -26,6 +26,7 @@ public class Student extends User {
 	 public int getLastWrongCount() {
 	        return lastWrongCount;
 	    }
+	 
 	   
 	    // Setters
 	 public void setLastScore(double lastScore) {
@@ -50,9 +51,5 @@ public class Student extends User {
 	               "   " + lastWrongCount + "\n" ;
 	    }
 
-		public String getPassword() {
-			// TODO Auto-generated method stub
-			return null;
-		}
 }
 

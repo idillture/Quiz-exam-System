@@ -66,6 +66,8 @@ public class QuizSystem {
             students = new ArrayList<>();
         }
 
+        StudentCSVReader.loadStudentsInto("students_runtime.csv", students);
+
         questionBank = new QuestionBank();
         questionBank.loadFromCsv("questions.csv");
         
@@ -396,8 +398,8 @@ public class QuizSystem {
     private void addStudentFromTeacher() {
 
         System.out.println("\n ADD NEW STUDENT ");
-
-        int id = students.size() + 1;
+        
+        int id = getNextStudentId();
 
         String username = askStringOrCancel("Username: ");
         if (username == null) return;
@@ -417,6 +419,14 @@ public class QuizSystem {
     }
 
     // HELPERS
+    
+    private int getNextStudentId() {
+        int maxId = 0;
+        for (Student s : students) {
+            if (s.getId() > maxId) maxId = s.getId();
+        }
+        return maxId + 1;
+    }
 
     private int askInt(String msg) {
         while (true) {

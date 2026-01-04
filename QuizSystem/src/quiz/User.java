@@ -34,6 +34,10 @@ package quiz;
 	        return fullName;
 	    }
 	    
+	    public String getPassword() {   
+	        return password;
+	    }
+	    
 	    // Setter
 
 	    public void setFullName(String fullName) {
@@ -44,14 +48,13 @@ package quiz;
 	        this.password = password;
 	    }
 
-	     // Checks if the given password matches this user's password.
-
 	    public boolean checkPassword(String inputPassword) {
-	        if (inputPassword == null) {
+	        if (inputPassword == null || password == null) { 
 	            return false;
 	        }
-	        return this.password.equals(inputPassword);
+	        return password.equals(inputPassword);
 	    }
+	    
 	    @Override
 	    public String toString() {
 	        return "User [id:" + id + ", username:" + username + ", fullName:" + fullName + "]";

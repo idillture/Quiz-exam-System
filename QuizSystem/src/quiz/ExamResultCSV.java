@@ -1,7 +1,6 @@
 package quiz;
 
 import java.io.FileWriter;
-import java.time.LocalDate;
 
 public class ExamResultCSV {
 
@@ -9,7 +8,6 @@ public class ExamResultCSV {
 
     public static void saveResult(Student s, double score, int correct, int wrong, int examId) {
 
-        String date = LocalDate.now().toString();
 
         try (FileWriter fw = new FileWriter(FILE, true)) {
             fw.write( s.getId() + ";" + examId + ";" + score + ";" + correct + ";" + wrong + ";" );
