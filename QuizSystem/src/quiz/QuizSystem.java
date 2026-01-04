@@ -70,7 +70,7 @@ public class QuizSystem {
 
         questionBank = new QuestionBank();
         questionBank.loadFromCsv("questions.csv");
-        
+        questionBank.loadFromRuntimeCsv("questions_runtime.csv");
         ExamResultCSVReader.loadResults("exam_results.csv", students);
 
         System.out.println("Loaded " + students.size() + " students.");
