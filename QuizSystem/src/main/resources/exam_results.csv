@@ -1,1 +1,3 @@
-﻿studentId;examId;score;correct;wrong;date
+studentId;score;correct;wrong
+8;40.0;5;5
+102;40.0;4;6

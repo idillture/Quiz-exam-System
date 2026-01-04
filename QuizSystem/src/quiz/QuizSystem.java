@@ -59,7 +59,7 @@ public class QuizSystem {
 
     private void initializeData() {
 
-        teacher = new Teacher(1, "teacher", "12345", "Teacher");
+        teacher = new Teacher(1, "teacher", "123", "Teacher");
 
         students = StudentCSVReader.loadStudents("students.csv");
         if (students == null) {
@@ -68,6 +68,8 @@ public class QuizSystem {
 
         questionBank = new QuestionBank();
         questionBank.loadFromCsv("questions.csv");
+        
+        ExamResultCSVReader.loadResults("exam_results.csv", students);
 
         System.out.println("Loaded " + students.size() + " students.");
         System.out.println("Loaded " + questionBank.getAllQuestions().size() + " questions.");

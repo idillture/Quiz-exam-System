@@ -12,8 +12,7 @@ public class ExamResultCSV {
         String date = LocalDate.now().toString();
 
         try (FileWriter fw = new FileWriter(FILE, true)) {
-            fw.write( s.getId() + ";" + examId + ";" + score + ";" + correct + ";" + wrong + ";" + date + "\n"
-            );
+            fw.write( s.getId() + ";" + examId + ";" + score + ";" + correct + ";" + wrong + ";" );
 
             System.out.println("Exam result saved to CSV:");
             System.out.println("Path: " + new java.io.File(FILE).getAbsolutePath());
